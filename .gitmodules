@@ -1,0 +1,6 @@
+[submodule "src/StaticLib1/3rd-party/magic_enum"]
+	path = src/StaticLib1/3rd-party/magic_enum
+	url = https://github.com/Neargye/magic_enum.git
+[submodule "src/StaticLib1/3rd-party/plog"]
+	path = src/StaticLib1/3rd-party/plog
+	url = https://github.com/SergiusTheBest/plog.git
