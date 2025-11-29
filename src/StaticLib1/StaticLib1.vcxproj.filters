@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{6ecdc4b9-e519-4f60-a143-80d04da7b05b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\Peer">
+      <UniqueIdentifier>{2a24674e-1590-42db-8317-651de589e1f5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DIQKD.hpp">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="QRNG.hpp">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.hpp">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Atom.hpp">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Alice.hpp">
+      <Filter>Protocol\Peer</Filter>
+    </ClInclude>
+    <ClInclude Include="Bob.hpp">
+      <Filter>Protocol\Peer</Filter>
+    </ClInclude>
+    <ClInclude Include="Peer.hpp">
+      <Filter>Protocol\Peer</Filter>
+    </ClInclude>
+    <ClInclude Include="PublicChannel.hpp">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StaticLib1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DIQKD.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="Atom.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="Alice.cpp">
+      <Filter>Protocol\Peer</Filter>
+    </ClCompile>
+    <ClCompile Include="Bob.cpp">
+      <Filter>Protocol\Peer</Filter>
+    </ClCompile>
+    <ClCompile Include="Peer.cpp">
+      <Filter>Protocol\Peer</Filter>
+    </ClCompile>
+    <ClCompile Include="PublicChannel.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
