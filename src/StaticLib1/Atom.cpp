@@ -33,8 +33,9 @@ void DIQKD_ns::Entanglement::Project(Atom* atom_ptr_, POLARIZATION polarization_
 	if (projected_changed)
 	{
 		uint8_t selected_state = g_qrng.Generate(1);
-		atom_ptr_->_state.store(selected_state ? STATE_UP : STATE_DOWN);
-		atom_ptr_->_state.notify_all();
+
+		atom_ptr_->_projected_state.store(selected_state ? STATE_UP : STATE_DOWN);
+		atom_ptr_->_projected_state.notify_all();
 
 		//PLOG_INFO << "Selected state: " << atom_ptr_->_state.load();
 	}
@@ -42,22 +43,15 @@ void DIQKD_ns::Entanglement::Project(Atom* atom_ptr_, POLARIZATION polarization_
 	{
 		auto another_polarization = atom_ptr_->_entangled_atom_ptr->_selected_polarization_;
 
-		atom_ptr_->_entangled_atom_ptr->_state.wait(STATE_SUPERPOSITION);
-		auto another_state = atom_ptr_->_entangled_atom_ptr->_state.load();
+		atom_ptr_->_entangled_atom_ptr->_projected_state.wait(STATE_SUPERPOSITION);
+		auto another_state = atom_ptr_->_entangled_atom_ptr->_projected_state.load();
 
 		auto X = std::max(polarization_, another_polarization);
 		auto Y = std::min(polarization_, another_polarization);
 
-		auto correlation_prob = IN_OUT_CORRELATION_PROBABILITY_TABLE[Y][X];
-
-		auto constexpr RAND_BIT_COUNT = 10;
-		auto threshold = correlation_prob * (1 << RAND_BIT_COUNT);
-
-		auto selected_value = g_qrng.Generate(RAND_BIT_COUNT);
-		auto correlated = selected_value < threshold;
+		auto correlated = g_qrng.Generate(RAND_BIT_COUNT) <= IN_OUT_CORRELATION_PROBABILITY_TABLE[Y][X] * (1 << RAND_BIT_COUNT);
 
 		STATE current_state = STATE_SUPERPOSITION;
-
 		switch (_bell_state)
 		{
 		case DIQKD_ns::BELL_STATE_PHI_PLUS:
@@ -72,7 +66,8 @@ void DIQKD_ns::Entanglement::Project(Atom* atom_ptr_, POLARIZATION polarization_
 			break;
 		}
 
-		atom_ptr_->_state.store(current_state);		
+		atom_ptr_->_projected_state.store(current_state);
+		atom_ptr_->_projected_state.notify_all();
 		//PLOG_INFO << "Measured state: " << current_state;
 
 		return;
@@ -83,57 +78,26 @@ void DIQKD_ns::Entanglement::Project(Atom* atom_ptr_, POLARIZATION polarization_
 
 void DIQKD_ns::Atom::Ionize(POLARIZATION polarization_)
 {
-	if (_state == STATE_SUPERPOSITION)
+	if (_projected_state.load() == STATE_SUPERPOSITION)
 	{
 		_selected_polarization_ = polarization_;
 		_entanglement_ptr->Project(this, polarization_);
+
+		auto ionization_inefficiency = g_qrng.Generate(RAND_BIT_COUNT) <= _ionization_noise * (1 << RAND_BIT_COUNT);
+		if (ionization_inefficiency)
+			_ionized_state.store(OPPOSITED_STATE(_projected_state.load()));
+		else
+			_ionized_state.store(_projected_state.load());
+
+		_ionized_state.notify_all();
 	}
 	
-	//_ionized_timepoint = g_timepoint.fetch_add(1);
-
-	//auto self_changed = _selected_polarization_.compare_exchange_strong(expected_state, self_state);
-	/*auto self_state = g_qrng.Generate(1) ? STATE_NEGATIVE : STATE_POSITIVE;
-	auto expected_state = STATE_SUPERPOSITION;
-	auto self_changed = _state.compare_exchange_strong(expected_state, self_state);
-	if (self_changed)
-	{
-		while (true)
-		{
-			expected_state = STATE_SUPERPOSITION;
-			auto another_changed = _entangled_atom->_state.compare_exchange_strong(expected_state, another_state);
-			if (another_changed)
-				break;
-	
-			if (this->_ionized_timepoint > _entangled_atom->_ionized_timepoint)
-			{
-				_state.exchange(STATE_SUPERPOSITION);
-				break;
-			}
-		}
-	}*/
-
-	//auto ionized = _state == STATE_POSITIVE;
-	//_exist = !ionized;
-
-	//switch (polarization_)
-	//{
-	//case DIQKD_ns::POLARIZATION_H:
-	//	break;
-	//case DIQKD_ns::POLARIZATION_V:
-	//	break;
-	//case DIQKD_ns::POLARIZATION_D:
-	//case DIQKD_ns::POLARIZATION_A:
-	//	break;
-	//default:
-	//	break;
-	//}
-
 	return;
 }
 
 STATE DIQKD_ns::Atom::Readout()
 {
-	return _state;
+	return _ionized_state.load();
 }
 
 void DIQKD_ns::Atom::Reset()
@@ -141,7 +105,8 @@ void DIQKD_ns::Atom::Reset()
 	_entanglement_ptr = nullptr;
 	_entangled_atom_ptr = nullptr;
 	_selected_polarization_ = POLARIZATION_NONE;
-	_state = STATE_SUPERPOSITION;
+	_projected_state = STATE_SUPERPOSITION;
+	_ionized_state = STATE_SUPERPOSITION;
 
 	return;
 }

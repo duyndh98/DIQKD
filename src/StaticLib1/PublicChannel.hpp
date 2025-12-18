@@ -41,6 +41,7 @@ namespace DIQKD_ns
 		void WaitPeerStatus(PEER_TYPE peer_type_, PEER_STATUS peer_status_);
 
 		std::vector<POLARIZATION> GetAnotherPeerInputs(PEER_TYPE peer_type_);
+		void WaitAnotherPeerStatus(PEER_TYPE peer_type_, PEER_STATUS peer_status_);
 
 		float ComputeCHSH();
 		

@@ -76,7 +76,8 @@ void DIQKD_ns::Peer::PostProcessing(ROUND_TYPE round_type_)
 		_key_rounds_data.push_back({ input, output });*/
 
 	_public_channel.UpdatePeerStatus(_peer_type, PEER_STATUS_IDLING);
-	
+	_public_channel.WaitAnotherPeerStatus(_peer_type, PEER_STATUS_IDLING);
+
 	return;
 }
 
@@ -118,8 +119,8 @@ void DIQKD_ns::Peer::SiftKey()
 		sifted_key_bin_str << bit_ch;
 	}
 
-	PLOG_INFO << magic_enum::enum_name(_peer_type) << " (" << _sifted_key.size() << "): "
-		<< (_peer_type == PEER_TYPE_ALICE ? "" : "(flipping)") << std::endl << sifted_key_bin_str.str();
+	//PLOG_INFO << magic_enum::enum_name(_peer_type) << " (" << _sifted_key.size() << "): "
+	//	<< (_peer_type == PEER_TYPE_ALICE ? "" : "(flipping)") << std::endl << sifted_key_bin_str.str();
 
 	return;
 }

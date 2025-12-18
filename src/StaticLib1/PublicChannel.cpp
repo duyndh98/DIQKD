@@ -101,6 +101,20 @@ std::vector<DIQKD_ns::POLARIZATION> DIQKD_ns::PublicChannel::GetAnotherPeerInput
 	return std::vector<POLARIZATION>();
 }
 
+void DIQKD_ns::PublicChannel::WaitAnotherPeerStatus(PEER_TYPE peer_type_, PEER_STATUS peer_status_)
+{
+	if (peer_type_ == PEER_TYPE_ALICE)
+	{
+		this->WaitPeerStatus(PEER_TYPE_BOB, peer_status_);
+	}
+	else if (peer_type_ == PEER_TYPE_BOB)
+	{
+		this->WaitPeerStatus(PEER_TYPE_ALICE, peer_status_);
+	}
+	
+	return;
+}
+
 float DIQKD_ns::PublicChannel::ComputeCHSH()
 {
 	auto n_rounds = _alice_inputs.size();

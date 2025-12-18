@@ -20,14 +20,14 @@ namespace DIQKD_ns
 
 	public:
 
-		DIQKD(size_t n_rounds_)
-			: _n_rounds(n_rounds_), _public_channel(n_rounds_), _alice(_public_channel, n_rounds_), _bob(_public_channel, n_rounds_)
+		DIQKD(size_t n_rounds_, float ionization_noise_)
+			: _n_rounds(n_rounds_), _public_channel(n_rounds_), _alice(_public_channel, n_rounds_, ionization_noise_), _bob(_public_channel, n_rounds_, ionization_noise_)
 		{
 			static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
 			plog::init(plog::verbose, &consoleAppender);
 		}
 
-		void Work();
+		float Work();
 
 		void AliceWork();
 		void BobWork();

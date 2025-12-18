@@ -18,6 +18,9 @@ namespace DIQKD_ns
 			auto x = (T)_rd();
 #endif
 
+			if (!n_bits_)
+				return x;
+
 			x &= ((T)1 << n_bits_) - 1;
 			return x;
 		}

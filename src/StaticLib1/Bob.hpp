@@ -11,6 +11,6 @@ namespace DIQKD_ns
 		friend class DIQKD;
 
 	public:
-		Bob(PublicChannel& public_channel_, size_t n_rounds_) : Peer(PEER_TYPE_BOB, 2, public_channel_, n_rounds_) {}
+		Bob(PublicChannel& public_channel_, size_t n_rounds_, float ionization_noise_) : Peer(PEER_TYPE_BOB, 2, public_channel_, n_rounds_, ionization_noise_) {}
 	};
 }

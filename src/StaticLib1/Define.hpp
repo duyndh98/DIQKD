@@ -77,6 +77,8 @@ namespace DIQKD_ns
 		BELL_STATE_PSI_MINUS = 3,
 	};
 
+#define RAND_BIT_COUNT 16
+
 	/*enum STATE
 	{
 		STATE_NEGATIVE = -1,

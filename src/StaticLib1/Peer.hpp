@@ -37,8 +37,8 @@ namespace DIQKD_ns
 
 	public:
 
-		Peer(PEER_TYPE peer_type_, size_t n_polarizations_, PublicChannel& public_channel_, size_t n_rounds_)
-			: _peer_type(peer_type_), _n_polarizations(n_polarizations_), _public_channel(public_channel_), _n_rounds(n_rounds_)
+		Peer(PEER_TYPE peer_type_, size_t n_polarizations_, PublicChannel& public_channel_, size_t n_rounds_, float ionization_noise_)
+			: _peer_type(peer_type_), _n_polarizations(n_polarizations_), _public_channel(public_channel_), _n_rounds(n_rounds_), _atom(ionization_noise_)
 		{
 			_inputs.reserve(n_rounds_);
 			_outputs.reserve(n_rounds_);

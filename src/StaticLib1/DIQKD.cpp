@@ -4,7 +4,7 @@
 #include "DIQKD.hpp"
 #include "Atom.hpp"
 
-void DIQKD_ns::DIQKD::Work()
+float DIQKD_ns::DIQKD::Work()
 {
 	std::thread alice_work(&DIQKD::AliceWork, this);
 	std::thread bob_work(&DIQKD::BobWork, this);
@@ -72,9 +72,9 @@ void DIQKD_ns::DIQKD::Work()
 	PLOG_INFO << "Q_0 = " << Q_0;
 	PLOG_INFO << "Q_1 = " << Q_1;
 
-	system("pause");
+	//system("pause");
 
-	return;
+	return CHSH;
 }
 
 void DIQKD_ns::DIQKD::AliceWork()
@@ -91,6 +91,8 @@ void DIQKD_ns::DIQKD::AliceWork()
 		auto round_type = (_alice._polarization > 1) ? ROUND_TYPE_TEST : ROUND_TYPE_KEY;
 		_public_channel.UpdateRoundType(round_type);
 		
+		PLOG_INFO << "[ALICE] round_type=" << round_type;
+
 		_alice.PostProcessing(round_type);
 	}
 
