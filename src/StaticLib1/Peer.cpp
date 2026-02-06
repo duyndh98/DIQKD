@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "Peer.hpp"
+#include "Define.hpp"
 
 using namespace DIQKD_ns;
 
@@ -17,6 +18,9 @@ void DIQKD_ns::Peer::Reset()
 	_polarization = POLARIZATION_NONE;
 	_state = STATE_SUPERPOSITION;
 	_atom.Reset();
+
+	_status.store(PEER_STATUS_IDLING);
+	_status.notify_all();
 
 	return;
 }
@@ -41,6 +45,8 @@ void DIQKD_ns::Peer::RandomNumberGeneration()
 void DIQKD_ns::Peer::StateSelectiveIonization()
 {
 	//PLOG_INFO << _peer_type << ": Ionizing " << _polarization;
+
+	//PLOG_DEBUG << "StateSelectiveIonization";
 
 	_atom.Ionize(_polarization);
 
@@ -75,8 +81,7 @@ void DIQKD_ns::Peer::PostProcessing(ROUND_TYPE round_type_)
 	else
 		_key_rounds_data.push_back({ input, output });*/
 
-	_public_channel.UpdatePeerStatus(_peer_type, PEER_STATUS_IDLING);
-	_public_channel.WaitAnotherPeerStatus(_peer_type, PEER_STATUS_IDLING);
+	_public_channel.UpdatePeerStatus(_peer_type, PEER_STATUS_DONE);
 
 	return;
 }

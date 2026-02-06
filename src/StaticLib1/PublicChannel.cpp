@@ -5,16 +5,16 @@ void DIQKD_ns::PublicChannel::StorePeerData(PEER_TYPE peer_type_, POLARIZATION i
 {
 	if (peer_type_ == PEER_TYPE_ALICE)
 	{
-		PLOG_INFO << magic_enum::enum_name(peer_type_) << " X=" << input_ << " A=" <<
-			(output_ == STATE_SUPERPOSITION ? "N/A" : magic_enum::enum_name(output_));
+		/*PLOG_INFO << magic_enum::enum_name(peer_type_) << " X=" << input_ << " A=" <<
+			(output_ == STATE_SUPERPOSITION ? "N/A" : magic_enum::enum_name(output_));*/
 
 		_alice_inputs.push_back(input_);
 		_alice_outputs.push_back(output_);
 	}
 	else if (peer_type_ == PEER_TYPE_BOB)
 	{
-		PLOG_INFO << magic_enum::enum_name(peer_type_) << " Y=" << input_ << " B=" <<
-			(output_ == STATE_SUPERPOSITION ? "N/A" : magic_enum::enum_name(output_));
+		/*PLOG_INFO << magic_enum::enum_name(peer_type_) << " Y=" << input_ << " B=" <<
+			(output_ == STATE_SUPERPOSITION ? "N/A" : magic_enum::enum_name(output_));*/
 
 		_bob_inputs.push_back(input_);
 		_bob_outputs.push_back(output_);
@@ -76,25 +76,35 @@ void DIQKD_ns::PublicChannel::WaitPeerStatus(PEER_TYPE peer_type_, PEER_STATUS p
 	auto expected_status = GET_PREV(peer_status_, MAX_PEER_STATUS);
 
 	if (peer_type_ == PEER_TYPE_ALICE)
-		_alice_status.wait(expected_status);
+	{		
+		auto current_status = _alice_status.load();
+		if (current_status != peer_status_)
+			_alice_status.wait(current_status);
+	}
 	else if (peer_type_ == PEER_TYPE_BOB)
-		_bob_status.wait(expected_status);
+	{
+		auto current_status = _bob_status.load();
+		if (current_status != peer_status_)
+			_bob_status.wait(current_status);
+	}
 
 	return;
 }
 
 std::vector<DIQKD_ns::POLARIZATION> DIQKD_ns::PublicChannel::GetAnotherPeerInputs(PEER_TYPE peer_type_)
 {
-	auto expected_status = GET_PREV(PEER_STATUS_IDLING, MAX_PEER_STATUS);
+	//auto expected_status = GET_PREV(PEER_STATUS_IDLING, MAX_PEER_STATUS);
+
+	WaitAnotherPeerStatus(peer_type_, PEER_STATUS_DONE);
 
 	if (peer_type_ == PEER_TYPE_ALICE)
 	{
-		_bob_status.wait(expected_status);
+		//_bob_status.wait(expected_status);
 		return _bob_inputs;
 	}
 	else if (peer_type_ == PEER_TYPE_BOB)
 	{
-		_alice_status.wait(expected_status);
+		//_alice_status.wait(expected_status);
 		return _alice_inputs;
 	}
 

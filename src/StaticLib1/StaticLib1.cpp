@@ -5,6 +5,7 @@
 #include "framework.h"
 
 #include "DIQKD.hpp"
+#include "ErrorCorrection.h"
 
 #include <vector>
 #include <list>
@@ -41,59 +42,55 @@ void fnStaticLib1(size_t noise_100_id, size_t n_experiments)
 #endif
 
 	constexpr size_t N_ROUND = 10000;
-	//constexpr size_t N_NOISE = 100 + 1;
-	//constexpr size_t N_EXPERIMENTS_PER_NOISE = 10;
-
-	//size_t result_count = 0;
-
-	/*result_file.open("result.csv", std::ios_base::in);
-	std::string line;
-	while (std::getline(result_file, line))
-	{
-		result_count++;
-	}
-	result_file.close();*/
 
 	std::stringstream file_name;
-	file_name << "result_";
+	file_name << "test_result_";
 	file_name << noise_100_id;
 	file_name << ".csv";
 
+	std::ifstream csv_file;
+	int result_count = 0;
+	csv_file.open(file_name.str(), std::ios::in);
+	std::string line;
+	while (std::getline(csv_file, line))
+	{
+		if (line.length() > 0)
+			result_count++;
+	}
+	csv_file.close();
+
 	std::ofstream result_file;
 	result_file.open(file_name.str(), std::ios::app);
-	//result_file << "noise,CHSH" << std::endl;
-	
-	/*size_t next_experiment_id = result_count / N_NOISE;
-	size_t next_noise_100_id = result_count % N_NOISE;*/
 
-	for (size_t experiment_id = 0; experiment_id < n_experiments; experiment_id++)
+	for (int experiment_id = result_count; experiment_id < n_experiments; experiment_id++)
 	{
-		/*size_t noise_100_id = 0;
-		if (experiment_id == next_experiment_id)
-			noise_100_id = next_noise_100_id;
+		bool success = false;
 
-		for (; noise_100_id < N_NOISE; noise_100_id++)*/
+		do
 		{
-			bool success = false;
-
-			do
+			try
 			{
-				try
-				{
-					DIQKD protocol(N_ROUND, noise_100_id / 100.0);
-					auto CHSH = protocol.Work();
+				DIQKD protocol(N_ROUND, noise_100_id / 100.0);
+				auto CHSH = protocol.Work();
 
-					result_file << noise_100_id << "," << CHSH << std::endl;
-					success = true;
-				}
-				catch (int error_cCode)
-				{
-				}
+				result_file << noise_100_id << "," << CHSH;
 
-			} while (!success);
+				result_file << "," << protocol.GetInputBinary(PEER_TYPE_ALICE);
+				result_file << "," << protocol.GetOutputBinary(PEER_TYPE_ALICE);
+				result_file << "," << protocol.GetInputBinary(PEER_TYPE_BOB);
+				result_file << "," << protocol.GetOutputBinary(PEER_TYPE_BOB);
 
-			continue;
-		}
+				result_file << std::endl;
+
+				success = true;
+			}
+			catch (...)
+			{
+			}
+
+		} while (!success);
+
+		continue;
 	}
 
 	result_file.close();

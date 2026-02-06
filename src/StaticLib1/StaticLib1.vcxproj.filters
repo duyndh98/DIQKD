@@ -51,6 +51,9 @@
     <ClInclude Include="PublicChannel.hpp">
       <Filter>Protocol</Filter>
     </ClInclude>
+    <ClInclude Include="ErrorCorrection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StaticLib1.cpp">
@@ -76,6 +79,9 @@
     </ClCompile>
     <ClCompile Include="PublicChannel.cpp">
       <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="ErrorCorrection.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -20,13 +20,26 @@ DIQKD_ns::Entanglement::Entanglement(BELL_STATE bell_state_, Atom& atom_A_, Atom
 	atom_A_._entangled_atom_ptr = &atom_B_;
 	atom_B_._entangled_atom_ptr = &atom_A_;
 
+	_projected = false;
+
+	//PLOG_DEBUG << "Entanglement";
+
 	return;
 }
 
 void DIQKD_ns::Entanglement::Project(Atom* atom_ptr_, POLARIZATION polarization_)
 {
+	//PLOG_DEBUG << "Project";
+
 	auto expected_projective = false;
 	auto projected_changed = _projected.compare_exchange_strong(expected_projective, true);
+	_projected.notify_all();
+
+	/*{
+		auto state = atom_ptr_->_entangled_atom_ptr->_projected_state.load();
+		if (state != STATE_SUPERPOSITION)
+			atom_ptr_->_entangled_atom_ptr->_projected_state.wait(state);
+	}*/
 
 	//PLOG_INFO << "Projected changed ? " << projected_changed;
 
@@ -43,7 +56,6 @@ void DIQKD_ns::Entanglement::Project(Atom* atom_ptr_, POLARIZATION polarization_
 	{
 		auto another_polarization = atom_ptr_->_entangled_atom_ptr->_selected_polarization_;
 
-		atom_ptr_->_entangled_atom_ptr->_projected_state.wait(STATE_SUPERPOSITION);
 		auto another_state = atom_ptr_->_entangled_atom_ptr->_projected_state.load();
 
 		auto X = std::max(polarization_, another_polarization);
@@ -102,11 +114,15 @@ STATE DIQKD_ns::Atom::Readout()
 
 void DIQKD_ns::Atom::Reset()
 {
-	_entanglement_ptr = nullptr;
-	_entangled_atom_ptr = nullptr;
+	//_entanglement_ptr = nullptr;
+	//_entangled_atom_ptr = nullptr;
 	_selected_polarization_ = POLARIZATION_NONE;
+
 	_projected_state = STATE_SUPERPOSITION;
+	_projected_state.notify_all();
+
 	_ionized_state = STATE_SUPERPOSITION;
+	_ionized_state.notify_all();
 
 	return;
 }
