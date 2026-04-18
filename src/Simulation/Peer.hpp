@@ -18,6 +18,8 @@ namespace DIQKD_ns
 		PEER_TYPE _peer_type;
 		size_t _n_polarizations;
 
+		//ErrorCorrection _error_correction;
+
 		// External
 		PublicChannel& _public_channel;
 		size_t _n_rounds;

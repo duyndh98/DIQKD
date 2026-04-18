@@ -13,18 +13,26 @@ void fnStaticLib1(size_t noise_100_id, size_t n_experiments);
 
 int main(int argc, char* argv[])
 {
-    size_t start_noise_id = 99;
-    size_t end_noise_id = 101;// start_noise_id + 1;
-
+    size_t start_noise_id = 0;
+    size_t end_noise_id = start_noise_id + 1;
+    
     /*std::vector<std::thread> threads;
     threads.reserve(end_noise_id - start_noise_id);*/
 
     for (size_t id = start_noise_id; id < end_noise_id; id++)
     {
+		//std::cout << "Noise id: " << id << std::endl;
+
         /*threads.emplace_back([](size_t noise_100_id)
             {*/
-        auto noise_100_id = id;
-        fnStaticLib1(noise_100_id, 5);
+        try
+        {
+            fnStaticLib1(id, 50);
+        }
+        catch (...)
+        {
+
+        }
         //}, id);
     }
 
@@ -32,6 +40,8 @@ int main(int argc, char* argv[])
     {
         thread.join();
     }*/
+
+    std::this_thread::sleep_for(std::chrono::hours(1));
 
 	return 0;
 }

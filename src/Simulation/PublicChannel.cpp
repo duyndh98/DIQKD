@@ -137,6 +137,7 @@ float DIQKD_ns::PublicChannel::ComputeCHSH()
 
 	for (size_t round_id = 0; round_id < n_rounds; round_id++)
 	{
+		// output of key rounds are not used for CHSH computation
 		if (_alice_outputs[round_id] == STATE_SUPERPOSITION || _bob_outputs[round_id] == STATE_SUPERPOSITION)
 			continue;
 

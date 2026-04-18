@@ -130,7 +130,7 @@
     <ClCompile Include="ConsoleApplication1.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StaticLib1\StaticLib1.vcxproj">
+    <ProjectReference Include="..\Simulation\StaticLib1.vcxproj">
       <Project>{e1bed248-cef0-4f52-89e7-16132065d5dc}</Project>
     </ProjectReference>
   </ItemGroup>

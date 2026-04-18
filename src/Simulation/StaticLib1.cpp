@@ -41,10 +41,10 @@ void fnStaticLib1(size_t noise_100_id, size_t n_experiments)
 	// 2.5778317153453827
 #endif
 
-	constexpr size_t N_ROUND = 10000;
+	constexpr size_t N_ROUND = 100;// 10000;
 
 	std::stringstream file_name;
-	file_name << "test_result_";
+	file_name << "example_";
 	file_name << noise_100_id;
 	file_name << ".csv";
 

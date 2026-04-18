@@ -4,6 +4,7 @@
 #include "Alice.hpp"
 #include "Bob.hpp"
 #include "PublicChannel.hpp"
+#include "ErrorCorrection.h"
 
 namespace DIQKD_ns
 {
