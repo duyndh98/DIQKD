@@ -85,7 +85,7 @@ fn correction(correct_key_str: &str, noise_key_str: &str, n_iterations: u32) -> 
 
 use std::io::BufWriter;
 
-fn test(path: &str) {
+fn test(path: &str, output_path: &str) {
 
     let file_path = Path::new(path);
     let file = File::open(file_path).unwrap();
@@ -95,8 +95,8 @@ fn test(path: &str) {
 
     let mut experiment_count = 0;
 
-    let mut output_path = String::from(path);
-    output_path.push_str(".txt");
+    //let mut output_path = String::from(path);
+    //output_path.push_str(".txt");
 
     let mut output_file = File::options()
         .write(true)
@@ -166,9 +166,11 @@ fn main() {
     //let args: Vec<String> = env::args().collect();
 
     for e in 0..101 {
+        println!("Noise {}%", e);
         //for n_iterations in 0..20 {
-        let path = format!("..\\..\\..\\DIQKD\\src\\ConsoleApplication1\\test_result_{}.csv.dat", e);
-        test(&path);
+        let path = format!("..\\..\\..\\..\\data\\shifting\\test_result_{}.csv.dat", e);
+        let out_path = format!("..\\..\\..\\..\\data\\correction\\test_result_{}.csv.dat.txt", e);
+        test(&path, &out_path);
         //}
     }
     
