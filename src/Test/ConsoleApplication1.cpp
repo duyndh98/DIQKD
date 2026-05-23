@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
             {*/
         try
         {
-            fnStaticLib1(id, 50);
+            fnStaticLib1(id, 100);
         }
         catch (...)
         {
