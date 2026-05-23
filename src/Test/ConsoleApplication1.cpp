@@ -14,7 +14,7 @@ void fnStaticLib1(size_t noise_100_id, size_t n_experiments);
 int main(int argc, char* argv[])
 {
     size_t start_noise_id = 0;
-    size_t end_noise_id = start_noise_id + 1;
+    size_t end_noise_id = 101;// start_noise_id + 1;
     
     /*std::vector<std::thread> threads;
     threads.reserve(end_noise_id - start_noise_id);*/

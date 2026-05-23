@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <stdint.h>
 
 #include "Alice.hpp"
 #include "Bob.hpp"
@@ -25,16 +26,9 @@ namespace DIQKD_ns
 
 	public:
 
-		DIQKD(size_t n_rounds_, float ionization_noise_)
-			: _n_rounds(n_rounds_), _public_channel(n_rounds_), _alice(_public_channel, n_rounds_, ionization_noise_), _bob(_public_channel, n_rounds_, ionization_noise_)
-		{
-			_ionization_noise = ionization_noise_;
-
-			static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
-			plog::init(plog::verbose, &consoleAppender);
-		}
-
-		float Work();
+		DIQKD(size_t n_rounds_, float ionization_noise_);
+		
+		std::tuple<float, float> Work();
 		std::string GetInputBinary(PEER_TYPE peer_type_);
 		std::string GetOutputBinary(PEER_TYPE peer_type_);
 

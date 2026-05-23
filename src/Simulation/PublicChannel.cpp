@@ -33,7 +33,8 @@ void DIQKD_ns::PublicChannel::UpdateRoundType(ROUND_TYPE round_type_)
 
 DIQKD_ns::ROUND_TYPE DIQKD_ns::PublicChannel::FetchRoundType()
 {
-	_round_type.wait(ROUND_TYPE_UNKNOWN);
+	if (_round_type.load() == ROUND_TYPE_UNKNOWN)
+		_round_type.wait(ROUND_TYPE_UNKNOWN);
 
 	return _round_type.load();
 }
@@ -57,6 +58,8 @@ DIQKD_ns::ROUND_TYPE DIQKD_ns::PublicChannel::FetchRoundType()
 
 void DIQKD_ns::PublicChannel::UpdatePeerStatus(PEER_TYPE peer_type_, PEER_STATUS peer_status_)
 {
+	//PLOG_DEBUG << magic_enum::enum_name(peer_type_) << " " << magic_enum::enum_name(peer_status_);
+
 	if (peer_type_ == PEER_TYPE_ALICE)
 	{
 		_alice_status.store(peer_status_);
@@ -73,6 +76,8 @@ void DIQKD_ns::PublicChannel::UpdatePeerStatus(PEER_TYPE peer_type_, PEER_STATUS
 
 void DIQKD_ns::PublicChannel::WaitPeerStatus(PEER_TYPE peer_type_, PEER_STATUS peer_status_)
 {
+	//PLOG_DEBUG << magic_enum::enum_name(peer_type_) << " " << magic_enum::enum_name(peer_status_);
+
 	auto expected_status = GET_PREV(peer_status_, MAX_PEER_STATUS);
 
 	if (peer_type_ == PEER_TYPE_ALICE)
@@ -95,7 +100,7 @@ std::vector<DIQKD_ns::POLARIZATION> DIQKD_ns::PublicChannel::GetAnotherPeerInput
 {
 	//auto expected_status = GET_PREV(PEER_STATUS_IDLING, MAX_PEER_STATUS);
 
-	WaitAnotherPeerStatus(peer_type_, PEER_STATUS_DONE);
+	WaitAnotherPeerStatus(peer_type_, PEER_STATUS_READOUT);
 
 	if (peer_type_ == PEER_TYPE_ALICE)
 	{
@@ -164,4 +169,50 @@ float DIQKD_ns::PublicChannel::ComputeCHSH()
 	float CHSH = E_21 - E_20 - E_30 - E_31;
 
 	return CHSH;
+}
+
+float DIQKD_ns::PublicChannel::ComputeQBER(const std::vector<POLARIZATION>& X, const std::vector<POLARIZATION>& Y, const std::vector<STATE>& A, const std::vector<STATE>& B)
+{
+	auto n_rounds = X.size();
+
+	size_t N_0 = 0;
+	size_t E_0 = 0;
+	size_t N_1 = 0;
+	size_t E_1 = 0;
+
+	for (size_t round_id = 0; round_id < n_rounds; round_id++)
+	{
+		auto x = X[round_id];
+		auto y = Y[round_id];
+		
+		if (x != y || x >= BOB_INPUT_COUNT)
+			continue;
+
+		auto a = A[round_id];
+		auto b = B[round_id];
+		bool error = a == b;
+
+		if (X[round_id] == POLARIZATION_0)
+		{
+			N_0++;
+
+			if (error)
+				E_0++;
+		}
+		else if (X[round_id] == POLARIZATION_1)
+		{
+			N_1++;
+
+			if (error)
+				E_1++;
+		}
+
+		continue;
+	}
+
+	auto Q_0 = (float)E_0 / N_0;
+	auto Q_1 = (float)E_1 / N_1;
+	auto QBER = (Q_0 + Q_1) / 2;
+
+	return QBER;
 }

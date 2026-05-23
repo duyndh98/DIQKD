@@ -27,7 +27,7 @@ namespace DIQKD_ns
 		// Runtime
 		POLARIZATION _polarization = POLARIZATION_NONE;
 		STATE _state = STATE_SUPERPOSITION;
-		std::atomic<PEER_STATUS> _status = PEER_STATUS_IDLING;
+		//std::atomic<PEER_STATUS> _status = PEER_STATUS_IDLING;
 
 		// Storage
 		std::vector<POLARIZATION> _inputs;

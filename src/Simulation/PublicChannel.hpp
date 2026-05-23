@@ -44,6 +44,6 @@ namespace DIQKD_ns
 		void WaitAnotherPeerStatus(PEER_TYPE peer_type_, PEER_STATUS peer_status_);
 
 		float ComputeCHSH();
-		
+		float ComputeQBER(const std::vector<POLARIZATION>& X, const std::vector<POLARIZATION>& Y, const std::vector<STATE>& A, const std::vector<STATE>& B);
 	};
 }

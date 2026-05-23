@@ -41,10 +41,10 @@ void fnStaticLib1(size_t noise_100_id, size_t n_experiments)
 	// 2.5778317153453827
 #endif
 
-	constexpr size_t N_ROUND = 100;// 10000;
+	constexpr size_t N_ROUND = 10000;
 
 	std::stringstream file_name;
-	file_name << "example_";
+	file_name << "../../data/readout/test_result_";
 	file_name << noise_100_id;
 	file_name << ".csv";
 
@@ -71,13 +71,15 @@ void fnStaticLib1(size_t noise_100_id, size_t n_experiments)
 			try
 			{
 				DIQKD protocol(N_ROUND, noise_100_id / 100.0);
-				auto CHSH = protocol.Work();
+				auto result = protocol.Work();
+				auto CHSH = std::get<0>(result);
+				auto QBER = std::get<1>(result);
 
-				result_file << noise_100_id << "," << CHSH;
+				result_file << noise_100_id << "," << CHSH << "," << QBER;
 
 				result_file << "," << protocol.GetInputBinary(PEER_TYPE_ALICE);
-				result_file << "," << protocol.GetOutputBinary(PEER_TYPE_ALICE);
 				result_file << "," << protocol.GetInputBinary(PEER_TYPE_BOB);
+				result_file << "," << protocol.GetOutputBinary(PEER_TYPE_ALICE);
 				result_file << "," << protocol.GetOutputBinary(PEER_TYPE_BOB);
 
 				result_file << std::endl;

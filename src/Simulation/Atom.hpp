@@ -17,6 +17,8 @@ namespace DIQKD_ns
 		Atom* _entangled_atom_ptr = nullptr;
 
 		POLARIZATION _selected_polarization_ = POLARIZATION_NONE;
+		PEER_TYPE _peer_type = PEER_TYPE::PEER_TYPE_UNKNOWN;
+
 		std::atomic<STATE> _projected_state = STATE_SUPERPOSITION;
 		std::atomic<STATE> _ionized_state = STATE_SUPERPOSITION;
 		
@@ -25,7 +27,7 @@ namespace DIQKD_ns
 	public:
 		Atom(float ionization_noise_) : _ionization_noise(ionization_noise_) {}
 
-		void Ionize(POLARIZATION polarization_);
+		void Ionize(POLARIZATION polarization_, PEER_TYPE peer_type_);
 		STATE Readout();
 		void Reset();
 	};

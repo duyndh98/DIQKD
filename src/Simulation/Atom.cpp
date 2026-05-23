@@ -29,39 +29,42 @@ DIQKD_ns::Entanglement::Entanglement(BELL_STATE bell_state_, Atom& atom_A_, Atom
 
 void DIQKD_ns::Entanglement::Project(Atom* atom_ptr_, POLARIZATION polarization_)
 {
-	//PLOG_DEBUG << "Project";
-
 	auto expected_projective = false;
 	auto projected_changed = _projected.compare_exchange_strong(expected_projective, true);
-	_projected.notify_all();
-
-	/*{
-		auto state = atom_ptr_->_entangled_atom_ptr->_projected_state.load();
-		if (state != STATE_SUPERPOSITION)
-			atom_ptr_->_entangled_atom_ptr->_projected_state.wait(state);
-	}*/
-
-	//PLOG_INFO << "Projected changed ? " << projected_changed;
-
+	
 	if (projected_changed)
 	{
+		_projected.notify_all();
+
 		uint8_t selected_state = g_qrng.Generate(1);
+		auto projected_state = selected_state ? STATE_UP : STATE_DOWN;
 
-		atom_ptr_->_projected_state.store(selected_state ? STATE_UP : STATE_DOWN);
+		atom_ptr_->_projected_state.store(projected_state);
 		atom_ptr_->_projected_state.notify_all();
-
-		//PLOG_INFO << "Selected state: " << atom_ptr_->_state.load();
 	}
 	else
 	{
-		auto another_polarization = atom_ptr_->_entangled_atom_ptr->_selected_polarization_;
+		atom_ptr_->_entangled_atom_ptr->_projected_state.wait(STATE_SUPERPOSITION);
 
 		auto another_state = atom_ptr_->_entangled_atom_ptr->_projected_state.load();
+		auto another_polarization = atom_ptr_->_entangled_atom_ptr->_selected_polarization_;
+		
+		POLARIZATION X = POLARIZATION_NONE, Y = POLARIZATION_NONE;
 
-		auto X = std::max(polarization_, another_polarization);
-		auto Y = std::min(polarization_, another_polarization);
+		if (atom_ptr_->_peer_type == PEER_TYPE_ALICE)
+		{
+			X = polarization_;
+			Y = another_polarization;
+		}
+		else
+		{
+			X = another_polarization;
+			Y = polarization_;
+		}
 
-		auto correlated = g_qrng.Generate(RAND_BIT_COUNT) <= IN_OUT_CORRELATION_PROBABILITY_TABLE[Y][X] * (1 << RAND_BIT_COUNT);
+		auto bound = IN_OUT_CORRELATION_PROBABILITY_TABLE[Y][X] * (1 << RAND_BIT_COUNT);
+		auto sample = g_qrng.Generate(RAND_BIT_COUNT);
+		auto correlated = sample < bound;
 
 		STATE current_state = STATE_SUPERPOSITION;
 		switch (_bell_state)
@@ -88,14 +91,18 @@ void DIQKD_ns::Entanglement::Project(Atom* atom_ptr_, POLARIZATION polarization_
 	return;
 }
 
-void DIQKD_ns::Atom::Ionize(POLARIZATION polarization_)
+void DIQKD_ns::Atom::Ionize(POLARIZATION polarization_, PEER_TYPE peer_type_)
 {
 	if (_projected_state.load() == STATE_SUPERPOSITION)
 	{
+		_peer_type = peer_type_;
 		_selected_polarization_ = polarization_;
 		_entanglement_ptr->Project(this, polarization_);
 
-		auto ionization_inefficiency = g_qrng.Generate(RAND_BIT_COUNT) <= _ionization_noise * (1 << RAND_BIT_COUNT);
+		auto bound = (uint64_t)(_ionization_noise * (1 << RAND_BIT_COUNT));
+		auto sample = g_qrng.Generate(RAND_BIT_COUNT);
+
+		auto ionization_inefficiency = sample < bound;
 		if (ionization_inefficiency)
 			_ionized_state.store(OPPOSITED_STATE(_projected_state.load()));
 		else
