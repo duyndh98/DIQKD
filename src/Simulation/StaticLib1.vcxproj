@@ -74,7 +74,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>clock_gettime=0;CLOCK_THREAD_CPUTIME_ID=0;CLOCK_MONOTONIC=0;__builtin_popcount=__popcnt;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -93,7 +93,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>clock_gettime=0;CLOCK_THREAD_CPUTIME_ID=0;CLOCK_MONOTONIC=0;__builtin_popcount=__popcnt;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -112,7 +112,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>clock_gettime=0;CLOCK_THREAD_CPUTIME_ID=0;CLOCK_MONOTONIC=0;__builtin_popcount=__popcnt;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -131,7 +131,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>clock_gettime=0;CLOCK_THREAD_CPUTIME_ID=0;CLOCK_MONOTONIC=0;__builtin_popcount=__popcnt;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -154,14 +154,26 @@
     <ClInclude Include="Atom.hpp" />
     <ClInclude Include="ErrorCorrection.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Helper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Peer.hpp" />
     <ClInclude Include="PublicChannel.hpp" />
     <ClInclude Include="QRNG.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Alice.cpp" />
-    <ClCompile Include="Bob.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\algorithm.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\block.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\classical_session.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\iteration.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\key.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\mock_classical_session.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\pending_item.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\random.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\reconciliation.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\report.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\shuffle.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\shuffled_key.cpp" />
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\stats.cpp" />
     <ClCompile Include="DIQKD.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="ErrorCorrection.cpp" />
@@ -177,8 +189,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

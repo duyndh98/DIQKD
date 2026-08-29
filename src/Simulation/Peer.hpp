@@ -32,7 +32,7 @@ namespace DIQKD_ns
 		// Storage
 		std::vector<POLARIZATION> _inputs;
 		std::vector<STATE> _outputs;
-		std::vector<STATE> _sifted_key;
+		std::vector<uint8_t> _sifted_key;
 
 		/*std::vector<std::tuple<POLARIZATION, STATE>> _key_rounds_data;
 		std::vector<std::tuple<POLARIZATION, STATE>> _test_rounds_data;*/
@@ -50,12 +50,22 @@ namespace DIQKD_ns
 
 		Atom& GetAtom();
 
-		virtual void Reset();
+	private:
+
+		// Quantum
 		virtual void WaitReadySignalTransmission();
 		virtual void RandomNumberGeneration();
 		virtual void StateSelectiveIonization();
 		virtual void FluorescenceReadout();
-		virtual void PostProcessing(ROUND_TYPE round_type_);
+		virtual void Store();
+		virtual void Reset();
+
+		// Classical
+		virtual void SharePublic();
 		virtual void SiftKey();
+
+	public:
+		virtual void QuantumStage();
+		virtual void ClassicalStage();		
 	};
 }

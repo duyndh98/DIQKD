@@ -7,41 +7,30 @@
 #include <thread>
 #include <vector>
 
-void fnStaticLib1(size_t noise_100_id, size_t n_experiments);
+void ExperimentWithNoise(uint8_t noise_pct, size_t n_rounds, size_t n_experiments);
 
 #pragma comment (lib, "StaticLib1.lib")
 
 int main(int argc, char* argv[])
 {
-    size_t start_noise_id = 0;
-    size_t end_noise_id = 101;// start_noise_id + 1;
+    srand(42);
+
+    size_t n_experiments = 10;// 100;
+    size_t n_rounds = 1e5;
+    size_t start_noise_pct = 0;
+    size_t end_noise_pct = 101;// start_noise_id + 1;
     
-    /*std::vector<std::thread> threads;
-    threads.reserve(end_noise_id - start_noise_id);*/
-
-    for (size_t id = start_noise_id; id < end_noise_id; id++)
+    for (size_t noise_pct = start_noise_pct; noise_pct < end_noise_pct; noise_pct++)
     {
-		//std::cout << "Noise id: " << id << std::endl;
-
-        /*threads.emplace_back([](size_t noise_100_id)
-            {*/
         try
         {
-            fnStaticLib1(id, 100);
+            ExperimentWithNoise(noise_pct, n_rounds, n_experiments);
         }
         catch (...)
         {
 
         }
-        //}, id);
     }
-
-    /*for (auto& thread : threads)
-    {
-        thread.join();
-    }*/
-
-    std::this_thread::sleep_for(std::chrono::hours(1));
 
 	return 0;
 }

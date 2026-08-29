@@ -19,6 +19,9 @@
     <Filter Include="Protocol\Peer">
       <UniqueIdentifier>{2a24674e-1590-42db-8317-651de589e1f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cascade">
+      <UniqueIdentifier>{2cc13882-b563-4a98-82af-f524aadfcf96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -54,6 +57,9 @@
     <ClInclude Include="ErrorCorrection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StaticLib1.cpp">
@@ -68,12 +74,6 @@
     <ClCompile Include="Atom.cpp">
       <Filter>Protocol</Filter>
     </ClCompile>
-    <ClCompile Include="Alice.cpp">
-      <Filter>Protocol\Peer</Filter>
-    </ClCompile>
-    <ClCompile Include="Bob.cpp">
-      <Filter>Protocol\Peer</Filter>
-    </ClCompile>
     <ClCompile Include="Peer.cpp">
       <Filter>Protocol\Peer</Filter>
     </ClCompile>
@@ -83,10 +83,47 @@
     <ClCompile Include="ErrorCorrection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\algorithm.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\block.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\classical_session.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\iteration.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\key.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\mock_classical_session.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\pending_item.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\random.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\reconciliation.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\report.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\shuffle.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\shuffled_key.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd-party\cascade-cpp\cascade\stats.cpp">
+      <Filter>cascade</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
   </ItemGroup>
 </Project>

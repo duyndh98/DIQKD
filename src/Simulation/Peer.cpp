@@ -72,14 +72,14 @@ void DIQKD_ns::Peer::FluorescenceReadout()
 	return;
 }
 
-void DIQKD_ns::Peer::PostProcessing(ROUND_TYPE round_type_)
+void DIQKD_ns::Peer::Store(/*ROUND_TYPE round_type_*/)
 {
-	auto input = _polarization;
-	auto output = round_type_ == ROUND_TYPE_TEST ? _state : STATE_SUPERPOSITION;
+	//auto input = _polarization;
+	//auto output = round_type_ == ROUND_TYPE_TEST ? _state : STATE_SUPERPOSITION;
 
-	_public_channel.StorePeerData(_peer_type, input, output);
+	//_public_channel.StorePeerData(_peer_type, input, output);
 
-	_inputs.push_back(input);
+	_inputs.push_back(_polarization);
 	_outputs.push_back(_state);
 
 	_public_channel.UpdatePeerStatus(_peer_type, PEER_STATUS_READOUT);
@@ -87,22 +87,85 @@ void DIQKD_ns::Peer::PostProcessing(ROUND_TYPE round_type_)
 	return;
 }
 
+void DIQKD_ns::Peer::QuantumStage()
+{
+	for (size_t round_id = 0; round_id < _n_rounds; round_id++)
+	{
+		WaitReadySignalTransmission();
+
+		RandomNumberGeneration();
+		StateSelectiveIonization();
+		FluorescenceReadout();
+
+		Store();
+		Reset();
+
+		continue;
+	}
+
+	return;
+}
+
+void DIQKD_ns::Peer::ClassicalStage()
+{
+	SharePublic();
+	SiftKey();
+
+	return;
+}
+
+void DIQKD_ns::Peer::SharePublic()
+{
+	_public_channel.PushPeerInputs(_peer_type, _inputs);
+
+	_public_channel.UpdatePeerStatus(_peer_type, PEER_STATUS_SHARED_INPUTS);
+	_public_channel.WaitAnotherPeerStatus(_peer_type, PEER_STATUS_SHARED_INPUTS);
+	
+	auto another_inputs = _public_channel.PullAnotherPeerInputs(_peer_type);
+	if (_inputs.size() != another_inputs.size())
+		return;
+
+	std::vector<STATE> shared_outputs;
+	shared_outputs.reserve(_outputs.size());
+
+	for (size_t round_id = 0; round_id < _inputs.size(); round_id++)
+	{
+		auto shared_output = STATE_SUPERPOSITION;
+		if (_inputs[round_id] > 1 || another_inputs[round_id] > 1)
+			shared_output = _outputs[round_id];
+		
+		shared_outputs.push_back(shared_output);
+	}
+
+	_public_channel.PushPeerOutputs(_peer_type, shared_outputs);
+
+	_public_channel.UpdatePeerStatus(_peer_type, PEER_STATUS_SHARED_OUTPUTS);
+	_public_channel.WaitAnotherPeerStatus(_peer_type, PEER_STATUS_SHARED_OUTPUTS);
+
+	return;
+}
+
 void DIQKD_ns::Peer::SiftKey()
 {
-	auto another_peer_inputs = _public_channel.GetAnotherPeerInputs(_peer_type);
-
-	if (another_peer_inputs.size() != _inputs.size())
+	auto another_inputs = _public_channel.PullAnotherPeerInputs(_peer_type);
+	if (_inputs.size() != another_inputs.size())
 		return;
 
 	_sifted_key.reserve(_inputs.size());
 
 	for (size_t round_id = 0; round_id < _inputs.size(); round_id++)
 	{
-		if (another_peer_inputs[round_id] != _inputs[round_id])
+		if (_inputs[round_id] != another_inputs[round_id])
 			continue;
 
-		_sifted_key.push_back(_outputs[round_id]);
+		if (_outputs[round_id] == STATE_SUPERPOSITION)
+			continue;
 
+		auto key_bit = _outputs[round_id] == STATE_UP ? 1 : 0;
+		if (_peer_type == PEER_TYPE_BOB)
+			key_bit = ~key_bit & 1;
+
+		_sifted_key.push_back(key_bit);
 		continue;
 	}
 

@@ -1,43 +1,44 @@
 #include "pch.h"
 #include "PublicChannel.hpp"
+using namespace DIQKD_ns;
 
-void DIQKD_ns::PublicChannel::StorePeerData(PEER_TYPE peer_type_, POLARIZATION input_, STATE output_)
-{
-	if (peer_type_ == PEER_TYPE_ALICE)
-	{
-		/*PLOG_INFO << magic_enum::enum_name(peer_type_) << " X=" << input_ << " A=" <<
-			(output_ == STATE_SUPERPOSITION ? "N/A" : magic_enum::enum_name(output_));*/
+//void DIQKD_ns::PublicChannel::StorePeerData(PEER_TYPE peer_type_, POLARIZATION input_, STATE output_)
+//{
+//	if (peer_type_ == PEER_TYPE_ALICE)
+//	{
+//		/*PLOG_INFO << magic_enum::enum_name(peer_type_) << " X=" << input_ << " A=" <<
+//			(output_ == STATE_SUPERPOSITION ? "N/A" : magic_enum::enum_name(output_));*/
+//
+//		_alice_inputs.push_back(input_);
+//		_alice_outputs.push_back(output_);
+//	}
+//	else if (peer_type_ == PEER_TYPE_BOB)
+//	{
+//		/*PLOG_INFO << magic_enum::enum_name(peer_type_) << " Y=" << input_ << " B=" <<
+//			(output_ == STATE_SUPERPOSITION ? "N/A" : magic_enum::enum_name(output_));*/
+//
+//		_bob_inputs.push_back(input_);
+//		_bob_outputs.push_back(output_);
+//	}
+//
+//	return;
+//}
 
-		_alice_inputs.push_back(input_);
-		_alice_outputs.push_back(output_);
-	}
-	else if (peer_type_ == PEER_TYPE_BOB)
-	{
-		/*PLOG_INFO << magic_enum::enum_name(peer_type_) << " Y=" << input_ << " B=" <<
-			(output_ == STATE_SUPERPOSITION ? "N/A" : magic_enum::enum_name(output_));*/
-
-		_bob_inputs.push_back(input_);
-		_bob_outputs.push_back(output_);
-	}
-
-	return;
-}
-
-void DIQKD_ns::PublicChannel::UpdateRoundType(ROUND_TYPE round_type_)
-{
-	_round_type.store(round_type_);
-	_round_type.notify_all();
-
-	return;
-}
-
-DIQKD_ns::ROUND_TYPE DIQKD_ns::PublicChannel::FetchRoundType()
-{
-	if (_round_type.load() == ROUND_TYPE_UNKNOWN)
-		_round_type.wait(ROUND_TYPE_UNKNOWN);
-
-	return _round_type.load();
-}
+//void DIQKD_ns::PublicChannel::UpdateRoundType(ROUND_TYPE round_type_)
+//{
+//	_round_type.store(round_type_);
+//	_round_type.notify_all();
+//
+//	return;
+//}
+//
+//DIQKD_ns::ROUND_TYPE DIQKD_ns::PublicChannel::FetchRoundType()
+//{
+//	if (_round_type.load() == ROUND_TYPE_UNKNOWN)
+//		_round_type.wait(ROUND_TYPE_UNKNOWN);
+//
+//	return _round_type.load();
+//}
 
 //bool DIQKD_ns::PublicChannel::SendSignal(ROUND_STATUS round_status_)
 //{
@@ -96,43 +97,80 @@ void DIQKD_ns::PublicChannel::WaitPeerStatus(PEER_TYPE peer_type_, PEER_STATUS p
 	return;
 }
 
-std::vector<DIQKD_ns::POLARIZATION> DIQKD_ns::PublicChannel::GetAnotherPeerInputs(PEER_TYPE peer_type_)
+void DIQKD_ns::PublicChannel::WaitAnotherPeerStatus(PEER_TYPE peer_type_, PEER_STATUS peer_status_)
 {
-	//auto expected_status = GET_PREV(PEER_STATUS_IDLING, MAX_PEER_STATUS);
-
-	WaitAnotherPeerStatus(peer_type_, PEER_STATUS_READOUT);
-
 	if (peer_type_ == PEER_TYPE_ALICE)
 	{
-		//_bob_status.wait(expected_status);
+		WaitPeerStatus(PEER_TYPE_BOB, peer_status_);
+	}
+	else if (peer_type_ == PEER_TYPE_BOB)
+	{
+		WaitPeerStatus(PEER_TYPE_ALICE, peer_status_);
+	}
+}
+
+void DIQKD_ns::PublicChannel::PushPeerInputs(PEER_TYPE peer_type_, const std::vector<POLARIZATION>& polarizations_)
+{
+	if (peer_type_ == PEER_TYPE_ALICE)
+	{
+		_alice_inputs.assign(polarizations_.begin(), polarizations_.end());
+	}
+	else if (peer_type_ == PEER_TYPE_BOB)
+	{
+		_bob_inputs.assign(polarizations_.begin(), polarizations_.end());
+	}
+
+	return;
+}
+
+std::vector<DIQKD_ns::POLARIZATION> DIQKD_ns::PublicChannel::PullAnotherPeerInputs(PEER_TYPE peer_type_)
+{
+	if (peer_type_ == PEER_TYPE_ALICE)
+	{
 		return _bob_inputs;
 	}
 	else if (peer_type_ == PEER_TYPE_BOB)
 	{
-		//_alice_status.wait(expected_status);
 		return _alice_inputs;
 	}
 
 	return std::vector<POLARIZATION>();
 }
 
-void DIQKD_ns::PublicChannel::WaitAnotherPeerStatus(PEER_TYPE peer_type_, PEER_STATUS peer_status_)
+void DIQKD_ns::PublicChannel::PushPeerOutputs(PEER_TYPE peer_type_, const std::vector<STATE>& states_)
 {
 	if (peer_type_ == PEER_TYPE_ALICE)
 	{
-		this->WaitPeerStatus(PEER_TYPE_BOB, peer_status_);
+		_alice_outputs.assign(states_.begin(), states_.end());
 	}
 	else if (peer_type_ == PEER_TYPE_BOB)
 	{
-		this->WaitPeerStatus(PEER_TYPE_ALICE, peer_status_);
+		_bob_outputs.assign(states_.begin(), states_.end());
 	}
-	
-	return;
 }
 
-float DIQKD_ns::PublicChannel::ComputeCHSH()
+std::vector<STATE> DIQKD_ns::PublicChannel::PullAnotherPeerOutputs(PEER_TYPE peer_type_)
 {
-	auto n_rounds = _alice_inputs.size();
+	return std::vector<STATE>();
+}
+
+//void DIQKD_ns::PublicChannel::WaitAnotherPeerStatus(PEER_TYPE peer_type_, PEER_STATUS peer_status_)
+//{
+//	if (peer_type_ == PEER_TYPE_ALICE)
+//	{
+//		this->WaitPeerStatus(PEER_TYPE_BOB, peer_status_);
+//	}
+//	else if (peer_type_ == PEER_TYPE_BOB)
+//	{
+//		this->WaitPeerStatus(PEER_TYPE_ALICE, peer_status_);
+//	}
+//	
+//	return;
+//}
+
+float DIQKD_ns::PublicChannel::ComputeCHSH(const std::vector<POLARIZATION>& X, const std::vector<POLARIZATION>& Y, const std::vector<STATE>& A, const std::vector<STATE>& B)
+{
+	auto n_rounds = X.size();
 
 	size_t correlation_frequencies[ALICE_INPUT_COUNT][BOB_INPUT_COUNT][2];
 
@@ -143,15 +181,18 @@ float DIQKD_ns::PublicChannel::ComputeCHSH()
 	for (size_t round_id = 0; round_id < n_rounds; round_id++)
 	{
 		// output of key rounds are not used for CHSH computation
-		if (_alice_outputs[round_id] == STATE_SUPERPOSITION || _bob_outputs[round_id] == STATE_SUPERPOSITION)
+		/*if (_alice_outputs[round_id] == STATE_SUPERPOSITION || _bob_outputs[round_id] == STATE_SUPERPOSITION)
+			continue;*/
+
+		auto x = X[round_id];
+		auto y = Y[round_id];
+		auto a = A[round_id];
+		auto b = B[round_id];
+
+		if (x < BOB_INPUT_COUNT)
 			continue;
 
-		auto X = _alice_inputs[round_id];
-		auto Y = _bob_inputs[round_id];
-		auto A = _alice_outputs[round_id];
-		auto B = _bob_outputs[round_id];
-
-		correlation_frequencies[X][Y][A == B ? 0 : 1]++;
+		correlation_frequencies[x][y][a == b ? 0 : 1]++;
 		continue;
 	}
 
@@ -213,6 +254,29 @@ float DIQKD_ns::PublicChannel::ComputeQBER(const std::vector<POLARIZATION>& X, c
 	auto Q_0 = (float)E_0 / N_0;
 	auto Q_1 = (float)E_1 / N_1;
 	auto QBER = (Q_0 + Q_1) / 2;
+	//auto QBER = (E_0 + E_1) / (float)(N_0 + N_1);
 
+	return QBER;
+}
+
+float DIQKD_ns::PublicChannel::ComputeQBERs(const std::vector<uint8_t>& alice_sifted_key_, const std::vector<uint8_t>& bob_sifted_key_)
+{
+	float QBER = 1.0f;
+
+	if (alice_sifted_key_.size() != bob_sifted_key_.size())
+		return QBER;
+
+	size_t n_rounds = alice_sifted_key_.size();
+	size_t n_err = 0;
+
+	for (size_t round_id = 0; round_id < n_rounds; round_id++)
+	{
+		auto error = alice_sifted_key_[round_id] != bob_sifted_key_[round_id];
+
+		if (error)
+			n_err += 1;
+	}
+
+	QBER = n_err / (float)n_rounds;
 	return QBER;
 }
